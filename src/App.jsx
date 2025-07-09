@@ -3,14 +3,20 @@ import React, { useEffect } from "react";
 
 import HandPosePainter from "./components/Drawing/HandPosePainterMain";
 
-//import './App.css';
+import HandPoseDrawingUIContainer from "./components/Drawing/HandPoseDrawingUIContainer";
+import './styles/globals.css';
+
+import './App.css';
 
 const App = () => {
 
 
   return (
     <>
-      <HandPosePainter/>
+    {
+      //  <¡-- <HandPosePainter/> -->
+    }
+      <HandPoseDrawingUIContainer/>
     </>
   );
 };
