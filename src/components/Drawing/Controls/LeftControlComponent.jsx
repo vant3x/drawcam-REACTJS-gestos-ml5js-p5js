@@ -1,4 +1,32 @@
+import { useState, useContext } from "react"
+import appContext from "./../../../context/app/appContext";
+
+import { Button } from "../../ui/button";
+import { Separator } from "../../ui/separator"
+
+import {
+  Brush,
+  Circle,
+  Minus,
+  Pipette,
+  Hand,
+  MousePointer,
+} from "lucide-react"
+
+const brushes = [
+  { name: "Pincel", icon: Brush, size: 5 },
+  { name: "Lápiz", icon: Minus, size: 2 },
+  { name: "Marcador", icon: Brush, size: 15 },
+  { name: "Aerógrafo", icon: Circle, size: 25 },
+]
+
 export default function LeftToolControlComponent() {
+  const AppContext = useContext(appContext);
+
+  const { gestureMode, currentBrush } = AppContext;
+
+  
+
     return (
         <>
              <div className="w-16 bg-gray-800 border-r border-gray-700 flex flex-col items-center py-4 space-y-2">

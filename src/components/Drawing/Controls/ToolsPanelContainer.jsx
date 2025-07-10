@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { Button } from "../../ui/button"
 import { Slider } from "../../ui/slider"
 import { Badge } from "../../ui/badge"
@@ -6,13 +6,8 @@ import { Separator } from "../../ui/separator"
 import {
   Brush,
   Eraser,
-  RotateCcw,
   Camera,
   Type,
-  ImageIcon,
-  Settings,
-  Play,
-  Pause,
   Download,
   Upload,
   Undo,
@@ -22,19 +17,22 @@ import {
   Move,
   Square,
   Circle,
-  Minus,
-  Eye,
-  EyeOff,
-  Plus,
-  Pipette,
-  Hand,
-  MousePointer,
+
 } from "lucide-react"
 import { Alert, AlertDescription } from "../../ui/alert"
 import { Textarea } from "../../ui/textarea";
+import appContext from "./../../../context/app/appContext";
 
-export default function ToolsPanelContainer()  {
+
+export default function ToolsPanelContainer({currentTool})  {
+
+  const AppContext = useContext(appContext);
+
+  const { cameraActive, zoom } = AppContext;
+
     return (
+
+        
         <>
       <div className="bg-gray-800 border-b border-gray-700 p-2">
         <div className="flex items-center justify-between">

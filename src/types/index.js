@@ -1,6 +1,9 @@
-export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
-export const SIGNUP_ERROR = 'SIGNUP_SUCCESS';
-
-export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
-export const LOGIN_ERROR = 'LOGIN_ERROR';
-export const SESSION_ERROR = 'SESSION_ERROR';
+export const SELECT_TOOL = 'SELECT_TOOL';
+export const SELECT_BRUSH = 'SELECT_BRUSH';
+export const SET_BRUSH_OPACITY = 'SET_BRUSH_OPACITY';
+export const SET_BRUSH_SIZE = 'SET_BRUSH_SIZE';
+export const SELECT_COLOR = 'SELECT_COLOR';
+export const SELECT_ZOOM = 'SELECT_ZOOM';
+export const SELECT_LAYER = 'SESSION_ERROR';
+export const GESTURE_MODE = 'GESTURE_MODE';
+export const RESET_STATE = 'RESET_STATE';

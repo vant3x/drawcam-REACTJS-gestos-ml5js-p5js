@@ -1,8 +1,7 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
+import appContext from "./../../context/app/appContext"
 import { Button } from "../ui/button"
-import { Slider } from "../ui/slider"
 import { Badge } from "../ui/badge"
-import { Separator } from "../ui/separator"
 import {
   Brush,
   Eraser,
@@ -13,28 +12,17 @@ import {
   Settings,
   Play,
   Pause,
-  Download,
-  Upload,
-  Undo,
-  Redo,
-  ZoomIn,
-  ZoomOut,
-  Move,
-  Square,
+
   Circle,
   Minus,
-  Eye,
-  EyeOff,
-  Plus,
-  Pipette,
-  Hand,
-  MousePointer,
+
 } from "lucide-react"
 import { Alert, AlertDescription } from "../ui/alert"
 import { Textarea } from "../ui/textarea"
 import ToolsPanelContainer from "./Controls/ToolsPanelContainer"
 import LayersArea from "./Controls/LayersArea"
 import LeftToolControlComponent from "./Controls/LeftControlComponent"
+import ColorsControlComponent from "./Controls/ColorsControlComponent"
 
 const brushes = [
   { name: "Pincel", icon: Brush, size: 5 },
@@ -43,45 +31,17 @@ const brushes = [
   { name: "Aerógrafo", icon: Circle, size: 25 },
 ]
 
-const colors = [
-  "#000000",
-  "#FFFFFF",
-  "#FF0000",
-  "#00FF00",
-  "#0000FF",
-  "#FFFF00",
-  "#FF00FF",
-  "#00FFFF",
-  "#FFA500",
-  "#800080",
-  "#FFC0CB",
-  "#A52A2A",
-  "#808080",
-  "#C0C0C0",
-  "#800000",
-  "#008000",
-  "#000080",
-  "#808000",
-  "#800080",
-  "#008080",
-  "#654321",
-  "#D2691E",
-  "#FF6347",
-  "#40E0D0",
-]
 
 export default function HandPoseDrawingUIContainer() {
-  const [currentTool, setCurrentTool] = useState("brush")
+  const AppContext = useContext(appContext);
+
+  const { currentTool, setCurrentTool, currentColor, brushSize, brushOpacity  } = AppContext;
   const [currentBrush, setCurrentBrush] = useState(0)
-  const [currentColor, setCurrentColor] = useState("#000000")
-  const [brushSize, setBrushSize] = useState([5])
-  const [brushOpacity, setBrushOpacity] = useState([100])
+
+ 
   const [cameraActive, setCameraActive] = useState(false)
   const [gestureMode, setGestureMode] = useState("draw")
-  const [layers, setLayers] = useState([
-    { id: "1", name: "Fondo", visible: true, opacity: 100 },
-    { id: "2", name: "Capa 1", visible: true, opacity: 100 },
-  ])
+  const [layers, setLayers] = useState()
   const [zoom, setZoom] = useState(100)
   const [ocrResult, setOcrResult] = useState("")
   const [sketchPrompt, setSketchPrompt] = useState("")
@@ -122,7 +82,7 @@ export default function HandPoseDrawingUIContainer() {
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       {/* Barra de herramientas superior */}
       
-    <ToolsPanelContainer/>
+    <ToolsPanelContainer currentTool={currentTool} />
       <div className="flex flex-1">
         {/* Panel izquierdo - Herramientas */}
         <LeftToolControlComponent/>
@@ -185,50 +145,7 @@ export default function HandPoseDrawingUIContainer() {
           </div>
 
           {/* Barra inferior - Colores */}
-          <div className="bg-gray-800 border-t border-gray-700 p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div
-                  className="w-12 h-12 rounded border-2 border-gray-600 cursor-pointer shadow-lg"
-                  style={{ backgroundColor: currentColor }}
-                  title="Color actual"
-                />
-                <div className="grid grid-cols-12 gap-1">
-                  {colors.map((color) => (
-                    <button
-                      key={color}
-                      className={`w-6 h-6 rounded border transition-all hover:scale-110 ${
-                        currentColor === color ? "border-white border-2 shadow-lg" : "border-gray-600"
-                      }`}
-                      style={{ backgroundColor: color }}
-                      onClick={() => setCurrentColor(color)}
-                      title={color}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm">Tamaño:</span>
-                  <Slider value={brushSize} onValueChange={setBrushSize} max={100} min={1} step={1} className="w-24" />
-                  <span className="text-sm w-8">{brushSize[0]}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm">Opacidad:</span>
-                  <Slider
-                    value={brushOpacity}
-                    onValueChange={setBrushOpacity}
-                    max={100}
-                    min={1}
-                    step={1}
-                    className="w-24"
-                  />
-                  <span className="text-sm w-8">{brushOpacity[0]}%</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <ColorsControlComponent/>
         </div>
 
         {/* Panel derecho */}

@@ -1,6 +1,17 @@
 import { useState } from "react";
+import { Button } from "../../ui/button";
+import {
+  Plus,
+  Eye
 
+} from "lucide-react"
 export default function LayersArea() {
+
+  const layers = [
+    { id: "1", name: "Fondo", visible: true, opacity: 100 },
+    { id: "2", name: "Capa 1", visible: true, opacity: 100 },
+  ];
+
   const [activeLayer, setActiveLayer] = useState("2");
   
   const addLayer = () => {
