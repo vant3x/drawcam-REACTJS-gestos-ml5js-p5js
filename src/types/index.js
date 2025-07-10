@@ -2,6 +2,7 @@ export const SELECT_TOOL = 'SELECT_TOOL';
 export const SELECT_BRUSH = 'SELECT_BRUSH';
 export const SET_BRUSH_OPACITY = 'SET_BRUSH_OPACITY';
 export const SET_BRUSH_SIZE = 'SET_BRUSH_SIZE';
+export const SET_CAMERA_ACTIVE = 'SET_CAMERA_ACTIVE ';
 export const SELECT_COLOR = 'SELECT_COLOR';
 export const SELECT_ZOOM = 'SELECT_ZOOM';
 export const SELECT_LAYER = 'SESSION_ERROR';

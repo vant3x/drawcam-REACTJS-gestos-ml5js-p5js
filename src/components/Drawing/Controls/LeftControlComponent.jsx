@@ -23,13 +23,17 @@ const brushes = [
 export default function LeftToolControlComponent() {
   const AppContext = useContext(appContext);
 
-  const { gestureMode, currentBrush, setCurrentBrush } = AppContext;
+  const { gestureMode, currentBrush, setCurrentBrush, setGestureMode, setCurrentTool } = AppContext;
 
   
 
     return (
         <>
              <div className="w-16 bg-gray-800 border-r border-gray-700 flex flex-col items-center py-4 space-y-2">
+              {
+                /**
+                 * 
+                 * 
           <Button
             variant={gestureMode === "draw" ? "default" : "ghost"}
             size="sm"
@@ -57,8 +61,11 @@ export default function LeftToolControlComponent() {
           >
             <Pipette className="h-5 w-5" />
           </Button>
-
           <Separator className="w-8 bg-gray-600" />
+
+                 */
+
+              }
 
           {brushes.map((brush, index) => (
             <Button
@@ -66,7 +73,7 @@ export default function LeftToolControlComponent() {
               variant={currentBrush === index ? "default" : "ghost"}
               size="sm"
               className="w-12 h-12 text-white hover:bg-gray-700"
-              onClick={() => setCurrentBrush(index)}
+              onClick={() => {setCurrentBrush(index); setCurrentTool('brush')}}
               title={brush.name}
             >
               <brush.icon className="h-5 w-5" />

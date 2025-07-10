@@ -2,7 +2,7 @@ import React, { useReducer } from "react";
 import appContext from "./appContext";
 import appReducer from "./appReducer";
 
-import { SELECT_TOOL, RESET_STATE, SELECT_COLOR, SET_BRUSH_SIZE, SET_BRUSH_OPACITY, SELECT_BRUSH } from "../../types";
+import { SELECT_TOOL, RESET_STATE, SELECT_COLOR, SET_BRUSH_SIZE, SET_BRUSH_OPACITY, SELECT_BRUSH, GESTURE_MODE, SET_CAMERA_ACTIVE, SELECT_ZOOM } from "../../types";
 
 
 
@@ -29,6 +29,7 @@ const AppState = ({ children }) => {
     zoom: 100,
     img2img: null,
     base64: "",
+    
   };
 
   // crear dispatch y state
@@ -71,6 +72,29 @@ const AppState = ({ children }) => {
     });
   };
 
+  const  setGestureMode
+  = (gestureMode) => {
+    dispatch({
+      type: GESTURE_MODE,
+      payload: gestureMode,
+    });
+  };
+
+  const  setCameraActive
+  = (cameraActive) => {
+    dispatch({
+      type: SET_CAMERA_ACTIVE,
+      payload: cameraActive,
+    });
+  };
+  
+  const  setZoom
+  = (zoom) => {
+    dispatch({
+      type: SELECT_ZOOM,
+      payload: zoom,
+    });
+  };
 
 
   const resetState = () => {
@@ -102,6 +126,9 @@ const AppState = ({ children }) => {
         setBrushSize,
         setBrushOpacity,
         setCurrentBrush,
+        setGestureMode,
+        setCameraActive,
+        setZoom,
         resetState
     }}>  
     {children}

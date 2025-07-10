@@ -28,7 +28,7 @@ export default function ToolsPanelContainer({currentTool})  {
 
   const AppContext = useContext(appContext);
 
-  const { cameraActive, zoom, setCurrentTool } = AppContext;
+  const { cameraActive, zoom, setCurrentTool, setZoom } = AppContext;
 
     return (
 

@@ -1,4 +1,4 @@
-import { SELECT_TOOL, RESET_STATE, SET_BRUSH_SIZE, SELECT_COLOR,  SET_BRUSH_OPACITY, SELECT_BRUSH } from "../../types";
+import { SELECT_TOOL, RESET_STATE, SET_BRUSH_SIZE, SELECT_COLOR,  SET_BRUSH_OPACITY, SELECT_BRUSH, GESTURE_MODE, SET_CAMERA_ACTIVE, SELECT_ZOOM } from "../../types";
 
 const appReducer = (state, action) => {
   const initialLayers = [
@@ -19,6 +19,7 @@ const appReducer = (state, action) => {
         currentTool: "brush",
         brushOpacity: [100],
         currentBrush: 0,
+        currentColor:"#FFFF00",
         brushSize: "",
         loading: null,
         ocrActive: false,
@@ -57,6 +58,21 @@ const appReducer = (state, action) => {
         ...state,
         currentBrush: action.payload,
       };
+    case GESTURE_MODE:
+      return {
+        ...state,
+        currentBrush: action.payload,
+      };
+    case SET_CAMERA_ACTIVE:
+      return {
+        ...state,
+        cameraActive: action.payload,
+      };
+    case SELECT_ZOOM:
+    return {
+      ...state,
+      zoom: action.payload,
+    };
     default:
       return state;
   }
