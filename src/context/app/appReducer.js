@@ -1,4 +1,4 @@
-import { SELECT_TOOL, RESET_STATE, SET_BRUSH_SIZE, SET_BRUSH_OPACITY } from "../../types";
+import { SELECT_TOOL, RESET_STATE, SET_BRUSH_SIZE, SELECT_COLOR,  SET_BRUSH_OPACITY, SELECT_BRUSH } from "../../types";
 
 const appReducer = (state, action) => {
   const initialLayers = [
@@ -10,26 +10,7 @@ const appReducer = (state, action) => {
     case SELECT_TOOL:
       return {
         ...state,
-        tool: action.payload,
-      };
-
-    case UPLOAD_FILE:
-      return {
-        ...state,
-        loading: true,
-      };
-    case UPLOAD_FILE_SUCCESS:
-      return {
-        ...state,
-        fileName: action.payload.fileName,
-        original_name: action.payload.original_name,
-        loading: false,
-      };
-    case UPLOAD_FILE_ERROR:
-      return {
-        ...state,
-        fileMessage: action.payload,
-        loading: false,
+        currentTool: action.payload,
       };
 
     case RESET_STATE:
@@ -37,6 +18,7 @@ const appReducer = (state, action) => {
         ...state,
         currentTool: "brush",
         brushOpacity: [100],
+        currentBrush: 0,
         brushSize: "",
         loading: null,
         ocrActive: false,
@@ -57,7 +39,7 @@ const appReducer = (state, action) => {
     case SELECT_COLOR:
       return {
         ...state,
-        color: action.payload,
+        currentColor: action.payload,
       };
 
     case SET_BRUSH_SIZE:
@@ -69,6 +51,11 @@ const appReducer = (state, action) => {
       return {
         ...state,
         brushOpacity: action.payload,
+      };
+    case SELECT_BRUSH:
+      return {
+        ...state,
+        currentBrush: action.payload,
       };
     default:
       return state;

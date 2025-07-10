@@ -35,11 +35,9 @@ const brushes = [
 export default function HandPoseDrawingUIContainer() {
   const AppContext = useContext(appContext);
 
-  const { currentTool, setCurrentTool, currentColor, brushSize, brushOpacity  } = AppContext;
-  const [currentBrush, setCurrentBrush] = useState(0)
+  const { currentTool, setCurrentTool, currentColor, brushSize, brushOpacity, cameraActive, setCameraActive, currentBrush, setCurrentBrush  } = AppContext;
 
  
-  const [cameraActive, setCameraActive] = useState(false)
   const [gestureMode, setGestureMode] = useState("draw")
   const [layers, setLayers] = useState()
   const [zoom, setZoom] = useState(100)

@@ -2,7 +2,7 @@ import React, { useReducer } from "react";
 import appContext from "./appContext";
 import appReducer from "./appReducer";
 
-import { SELECT_TOOL, RESET_STATE, SELECT_COLOR, SET_BRUSH_SIZE, SET_BRUSH_OPACITY } from "../../types";
+import { SELECT_TOOL, RESET_STATE, SELECT_COLOR, SET_BRUSH_SIZE, SET_BRUSH_OPACITY, SELECT_BRUSH } from "../../types";
 
 
 
@@ -20,6 +20,7 @@ const AppState = ({ children }) => {
     brushOpacity: [100],
     brushSize: [5],
     currentColor:  "#FFFF00",
+    currentBrush:  0,
     loading: null,
     ocrActive: false,
     gestureMode: 'draw',
@@ -62,6 +63,15 @@ const AppState = ({ children }) => {
     });
   };
 
+  const  setCurrentBrush
+  = (currentBrush) => {
+    dispatch({
+      type: SELECT_BRUSH,
+      payload: currentBrush,
+    });
+  };
+
+
 
   const resetState = () => {
     dispatch({
@@ -80,6 +90,7 @@ const AppState = ({ children }) => {
         brushSize: state.brushSize,
         currentColor: state.currentColor,
         loading:state.zoom,
+        currentBrush: state.currentBrush,
         ocrActive: state.zoom,
         gestureMode: state.gestureMode,
         cameraActive: state.cameraActive,
@@ -90,6 +101,7 @@ const AppState = ({ children }) => {
         setCurrentColor,
         setBrushSize,
         setBrushOpacity,
+        setCurrentBrush,
         resetState
     }}>  
     {children}

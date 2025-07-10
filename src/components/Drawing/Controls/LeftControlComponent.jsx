@@ -23,7 +23,7 @@ const brushes = [
 export default function LeftToolControlComponent() {
   const AppContext = useContext(appContext);
 
-  const { gestureMode, currentBrush } = AppContext;
+  const { gestureMode, currentBrush, setCurrentBrush } = AppContext;
 
   
 
