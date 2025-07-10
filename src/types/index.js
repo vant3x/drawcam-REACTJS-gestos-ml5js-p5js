@@ -7,4 +7,5 @@ export const SELECT_COLOR = 'SELECT_COLOR';
 export const SELECT_ZOOM = 'SELECT_ZOOM';
 export const SELECT_LAYER = 'SESSION_ERROR';
 export const GESTURE_MODE = 'GESTURE_MODE';
+export const IS_DRAWING = 'IS_DRAWING';
 export const RESET_STATE = 'RESET_STATE';

@@ -1,4 +1,4 @@
-import { SELECT_TOOL, RESET_STATE, SET_BRUSH_SIZE, SELECT_COLOR,  SET_BRUSH_OPACITY, SELECT_BRUSH, GESTURE_MODE, SET_CAMERA_ACTIVE, SELECT_ZOOM } from "../../types";
+import { SELECT_TOOL, RESET_STATE, SET_BRUSH_SIZE, SELECT_COLOR,  SET_BRUSH_OPACITY, SELECT_BRUSH, GESTURE_MODE, SET_CAMERA_ACTIVE, SELECT_ZOOM, IS_DRAWING } from "../../types";
 
 const appReducer = (state, action) => {
   const initialLayers = [
@@ -29,6 +29,7 @@ const appReducer = (state, action) => {
         zoom: 100,
         img2img: null,
         base64: "",
+        isDrawing: false
       };
 
     case SELECT_TOOL:
@@ -73,6 +74,11 @@ const appReducer = (state, action) => {
       ...state,
       zoom: action.payload,
     };
+    case IS_DRAWING:
+      return {
+        ...state,
+        isDrawing: action.isDrawing
+      }
     default:
       return state;
   }

@@ -17,6 +17,7 @@ import {
   Move,
   Square,
   Circle,
+  Pyramid
 
 } from "lucide-react"
 import { Alert, AlertDescription } from "../../ui/alert"
@@ -99,6 +100,14 @@ export default function ToolsPanelContainer({currentTool})  {
               onClick={() => setCurrentTool("circle")}
             >
               <Circle className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={currentTool === "circle" ? "default" : "ghost"}
+              size="sm"
+              className="text-white hover:bg-gray-700"
+              onClick={() => setCurrentTool("3d")}
+            >
+              <Pyramid className="h-4 w-4" />3D
             </Button>
           </div>
 

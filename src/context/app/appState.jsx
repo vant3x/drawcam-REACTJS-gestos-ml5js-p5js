@@ -2,7 +2,7 @@ import React, { useReducer } from "react";
 import appContext from "./appContext";
 import appReducer from "./appReducer";
 
-import { SELECT_TOOL, RESET_STATE, SELECT_COLOR, SET_BRUSH_SIZE, SET_BRUSH_OPACITY, SELECT_BRUSH, GESTURE_MODE, SET_CAMERA_ACTIVE, SELECT_ZOOM } from "../../types";
+import { SELECT_TOOL, RESET_STATE, SELECT_COLOR, SET_BRUSH_SIZE, SET_BRUSH_OPACITY, SELECT_BRUSH, GESTURE_MODE, SET_CAMERA_ACTIVE, SELECT_ZOOM, IS_DRAWING } from "../../types";
 
 
 
@@ -29,7 +29,7 @@ const AppState = ({ children }) => {
     zoom: 100,
     img2img: null,
     base64: "",
-    
+    isDrawing: false,
   };
 
   // crear dispatch y state
@@ -96,6 +96,13 @@ const AppState = ({ children }) => {
     });
   };
 
+  const setIsDrawing = (isDrawing) => {
+    dispatch({
+      type: IS_DRAWING,
+      payload: isDrawing
+    })
+  }
+
 
   const resetState = () => {
     dispatch({
@@ -121,6 +128,7 @@ const AppState = ({ children }) => {
         layers:  state.layers,
         img2img: state.zoom,
         base64: state.zoom,
+        isDrawing: state.isDrawing,
         setCurrentTool,
         setCurrentColor,
         setBrushSize,
@@ -129,6 +137,7 @@ const AppState = ({ children }) => {
         setGestureMode,
         setCameraActive,
         setZoom,
+        setIsDrawing,
         resetState
     }}>  
     {children}
