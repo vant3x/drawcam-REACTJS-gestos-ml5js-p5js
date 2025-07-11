@@ -152,12 +152,7 @@ const HandPosePainter = () => {
     }
   }, [appState, p5Instance, startDetection]); 
 
-  // Función para iniciar la aplicación (llamada por el botón)
-  const handleStart = useCallback(() => {
-    if (isML5Loaded) {
-      setAppState("loading");
-    }
-  }, [isML5Loaded]);
+
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -168,6 +163,13 @@ const HandPosePainter = () => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [clearPainting]);
+
+    // Función para iniciar la aplicación (llamada por el botón)
+    const handleStart = useCallback(() => {
+      if (isML5Loaded) {
+        setAppState("loading");
+      }
+    }, [isML5Loaded]);
 
   return (
     <div className="app">

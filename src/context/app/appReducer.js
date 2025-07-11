@@ -1,4 +1,17 @@
-import { SELECT_TOOL, RESET_STATE, SET_BRUSH_SIZE, SELECT_COLOR,  SET_BRUSH_OPACITY, SELECT_BRUSH, GESTURE_MODE, SET_CAMERA_ACTIVE, SELECT_ZOOM, IS_DRAWING } from "../../types";
+import {
+  SELECT_TOOL,
+  RESET_STATE,
+  SET_BRUSH_SIZE,
+  SELECT_COLOR,
+  SET_BRUSH_OPACITY,
+  SELECT_BRUSH,
+  GESTURE_MODE,
+  SET_CAMERA_ACTIVE,
+  SELECT_ZOOM,
+  IS_DRAWING,
+  SET_CLEAR_CANVAS,
+  SET_START_HAND_POSE_DETECTION,
+} from "../../types";
 
 const appReducer = (state, action) => {
   const initialLayers = [
@@ -7,20 +20,14 @@ const appReducer = (state, action) => {
   ];
 
   switch (action.type) {
-    case SELECT_TOOL:
-      return {
-        ...state,
-        currentTool: action.payload,
-      };
-
     case RESET_STATE:
       return {
         ...state,
         currentTool: "brush",
         brushOpacity: [100],
         currentBrush: 0,
-        currentColor:"#FFFF00",
-        brushSize: "",
+        currentColor: "#FFFF00",
+        brushSize: [5],
         loading: null,
         ocrActive: false,
         gestureMode: "draw",
@@ -29,7 +36,9 @@ const appReducer = (state, action) => {
         zoom: 100,
         img2img: null,
         base64: "",
-        isDrawing: false
+        isDrawing: false,
+        startHandPoseDetection: null,
+        clearCanvas: null,
       };
 
     case SELECT_TOOL:
@@ -62,7 +71,7 @@ const appReducer = (state, action) => {
     case GESTURE_MODE:
       return {
         ...state,
-        currentBrush: action.payload,
+        gestureMode: action.payload,
       };
     case SET_CAMERA_ACTIVE:
       return {
@@ -70,15 +79,25 @@ const appReducer = (state, action) => {
         cameraActive: action.payload,
       };
     case SELECT_ZOOM:
-    return {
-      ...state,
-      zoom: action.payload,
-    };
+      return {
+        ...state,
+        zoom: action.payload,
+      };
     case IS_DRAWING:
       return {
         ...state,
-        isDrawing: action.isDrawing
-      }
+        isDrawing: action.payload,
+      };
+    case SET_START_HAND_POSE_DETECTION:
+      return {
+        ...state,
+        startHandPoseDetection: action.payload,
+      };
+    case SET_CLEAR_CANVAS:
+      return {
+        ...state,
+        clearCanvas: action.payload,
+      };
     default:
       return state;
   }
