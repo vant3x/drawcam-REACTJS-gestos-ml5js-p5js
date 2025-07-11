@@ -7,7 +7,7 @@ import ToolsPanelContainer from "./Controls/ToolsPanelContainer";
 import LayersArea from "./Controls/LayersArea";
 import LeftToolControlComponent from "./Controls/LeftControlComponent";
 import RightPanelControlComponent from "./Controls/RightControlPanelComponent";
-import DrawCanvasAreaComponent from "./DrawCanvasAreaComponent";
+import DrawCanvasAreaComponent from "./DrawCanvasMainAreaComponent";
 
 
 

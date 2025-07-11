@@ -22,7 +22,7 @@ export default function RightPanelControlComponent() {
 
   const AppContext = useContext(appContext);
 
-  const { gestureMode } = AppContext;
+  const { gestureMode, clearCanvas } = AppContext;
 
   const performOCR = async () => {
     setIsProcessing(true);
@@ -41,9 +41,14 @@ export default function RightPanelControlComponent() {
     }, 3000);
   };
 
-  const clearCanvas = () => {
-    // Simular limpieza del canvas
-    console.log("Canvas limpiado");
+
+
+  const handleClearCanvas = () => {
+    if (clearCanvas) { 
+      clearCanvas(); 
+    } else {
+      console.warn("La función clearCanvas no está disponible en el contexto.");
+    }
   };
 
   return (
@@ -100,7 +105,7 @@ export default function RightPanelControlComponent() {
           <h3 className="text-sm font-semibold mb-3">Acciones</h3>
           <div className="space-y-2">
             <Button
-              onClick={clearCanvas}
+              onClick={handleClearCanvas}
               variant="outline"
               size="sm"
               className="w-full bg-transparent"

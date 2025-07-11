@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import appContext from "./../../context/app/appContext";
+import appContext from "../../context/app/appContext";
 import { Brush, Circle, Minus } from "lucide-react";
 import ColorsControlComponent from "./Controls/ColorsControlComponent";
 import CameraDrawContentComponent from "./CameraDrawContentComponent";
@@ -46,34 +46,8 @@ export default function DrawCanvasAreaComponent() {
                 onMouseUp={() => setIsDrawing(false)}
               >
                 {/* Simulación de dibujo */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                  <path
-                    d="M 100 200 Q 200 100 300 200 T 500 200"
-                    stroke={currentColor}
-                    strokeWidth={brushSize[0]}
-                    fill="none"
-                    strokeLinecap="round"
-                    opacity={brushOpacity[0] / 100}
-                  />
-                  <circle
-                    cx="600"
-                    cy="300"
-                    r="50"
-                    stroke={currentColor}
-                    strokeWidth={brushSize[0]}
-                    fill="none"
-                    opacity={brushOpacity[0] / 100}
-                  />
-                  <text
-                    x="200"
-                    y="350"
-                    fontSize="48"
-                    fill={currentColor}
-                    opacity={brushOpacity[0] / 100}
-                  >
-                    Hola Mundo
-                  </text>
-                </svg>
+          
+    
 
                 {/* Indicador de herramienta activa */}
                 <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded text-sm">
