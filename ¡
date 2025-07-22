@@ -1,0 +1,18 @@
+Revert "feat: primera versi n en react fucnional"
+
+This reverts commit 115bb1401f1bc54425626771ba020cf6160ec525.
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch master
+# Your branch is behind 'origin/master' by 1 commit, and can be fast-forwarded.
+#   (use "git pull" to update your local branch)
+#
+# Changes to be committed:
+#	modified:   src/components/Drawing/CameraDrawContentComponent.jsx
+#	modified:   src/components/Drawing/CanvasML/CanvasCamMLComponent.jsx
+#	modified:   src/components/Drawing/Controls/RightControlPanelComponent.jsx
+#	renamed:    src/components/Drawing/DrawCanvasMainAreaComponent.jsx -> src/components/Drawing/DrawCanvasAreaComponent.jsx
+#	modified:   src/components/Drawing/HandPoseDrawingUIContainer.jsx
+#

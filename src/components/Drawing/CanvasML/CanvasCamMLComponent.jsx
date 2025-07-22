@@ -30,6 +30,7 @@ export default function CanvasCamera5Component() {
   const paintingRef = useRef(null);
   const previousPosRef = useRef({ x: 0, y: 0 });
   const isInitializedRef = useRef(false);
+  const strokeWidthRef = useRef(8);
 
   const { isML5Loaded, startDetection } = useML5HandPose((results) => {
     handsRef.current = results;
@@ -69,20 +70,58 @@ export default function CanvasCamera5Component() {
         p.image(videoRef.current, 0, 0);
 
         // Usa handsRef.current para acceder a los datos de las manos
+
         const currentHands = handsRef.current;
         if (currentHands.length > 0) {
-          const hand = currentHands[0];
-          const index = hand.index_finger_tip;
-          const thumb = hand.thumb_tip;
+          let rightHand, leftHand;
 
-          if (index && thumb) {
+          // Separar las manos detectadas en izquierda y derecha
+          for (let hand of currentHands) {
+            if (hand.handedness === "Right") {
+              const index = hand.index_finger_tip;
+              const thumb = hand.thumb_tip;
+              rightHand = { index, thumb };
+            }
+            if (hand.handedness === "Left") {
+              const index = hand.index_finger_tip;
+              const thumb = hand.thumb_tip;
+              leftHand = { index, thumb };
+            }
+          }
+
+          if (leftHand && leftHand.index && leftHand.thumb) {
+            const { index, thumb } = leftHand;
+            const x = (index.x + thumb.x) * 0.5;
+            const y = (index.y + thumb.y) * 0.5;
+            // Calcular grosor basado en la distancia entre dedos
+            const pinchDistance = p.dist(index.x, index.y, thumb.x, thumb.y);
+            strokeWidthRef.current = Math.max(2, Math.min(50, pinchDistance));
+
+            p.fill(255, 0, 255); // Color magenta como en el ejemplo
+            p.noStroke();
+            p.circle(x, y, strokeWidthRef.current);
+
+            // Texto mostrando el grosor actual
+            p.fill(255);
+            p.textAlign(p.CENTER);
+            p.text(
+              `Grosor: ${Math.round(strokeWidthRef.current)}`,
+              x,
+              y - strokeWidthRef.current / 2 - 10
+            );
+          }
+
+          if (rightHand && rightHand.index && rightHand.thumb) {
+            const { index, thumb } = rightHand;
+
             const x = (index.x + thumb.x) * 0.5;
             const y = (index.y + thumb.y) * 0.5;
 
             const distance = p.dist(index.x, index.y, thumb.x, thumb.y);
             if (distance < 20) {
+           
               paintingRef.current.stroke(255, 255, 0);
-              paintingRef.current.strokeWeight(8);
+              paintingRef.current.strokeWeight(strokeWidthRef.current * 0.5);
               paintingRef.current.line(
                 previousPosRef.current.x,
                 previousPosRef.current.y,
@@ -203,10 +242,9 @@ export default function CanvasCamera5Component() {
         clearPainting();
       }
     };
-    
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-
   }, [clearPainting]);
 
   useEffect(() => {
