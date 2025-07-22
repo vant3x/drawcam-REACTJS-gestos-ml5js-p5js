@@ -33,13 +33,39 @@ export default function DrawCanvasAreaComponent() {
     if (!paintingRef) return;
 
     const sketch = (p) => {
+      // Dimensiones del canvas original y destino
+      const originalWidth = 700;
+      const originalHeight = 490;
+      const targetWidth = 550;
+      const targetHeight = 400;
+      
+      // Calcular factor de escala manteniendo proporción
+      const scaleX = targetWidth / originalWidth;
+      const scaleY = targetHeight / originalHeight;
+      const scale = Math.min(scaleX, scaleY); // Usar el menor para mantener proporción
+      
+      // Dimensiones escaladas
+      const scaledWidth = originalWidth * scale;
+      const scaledHeight = originalHeight * scale;
+      
+      // Offsets para centrar
+      const offsetX = (targetWidth - scaledWidth) / 2;
+      const offsetY = (targetHeight - scaledHeight) / 2;
+
       p.setup = () => {
-        p.createCanvas(550, 400).parent(sketchRef.current);
+        p.createCanvas(targetWidth, targetHeight).parent(sketchRef.current);
       };
 
       p.draw = () => {
         p.background(255);
-        p.image(paintingRef, 0, 0);
+        
+        if (paintingRef) {
+          p.push();
+          p.translate(offsetX, offsetY);
+          p.scale(scale);
+          p.image(paintingRef, 0, 0);
+          p.pop();
+        }
       };
     };
 

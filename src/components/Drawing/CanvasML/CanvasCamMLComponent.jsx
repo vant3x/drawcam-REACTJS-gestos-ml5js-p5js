@@ -23,6 +23,7 @@ export default function CanvasCamera5Component() {
     setClearCanvas,
     setBrushSize,
     setPaintingRef,
+    currentColor
   } = AppContext;
 
   const [appState, setAppState] = useState("init");
@@ -52,8 +53,8 @@ export default function CanvasCamera5Component() {
   const sketch = useCallback(
     (p) => {
       p.setup = () => {
-        p.createCanvas(700, 490);
-        paintingRef.current = p.createGraphics(700, 490);
+        p.createCanvas(720, 490);
+        paintingRef.current = p.createGraphics(710, 490);
         setPaintingRef(paintingRef.current);
         paintingRef.current.clear();
         isInitializedRef.current = true;
@@ -71,7 +72,8 @@ export default function CanvasCamera5Component() {
           return;
         }
 
-        p.image(videoRef.current, 0, 0);
+        p.image(videoRef.current, 0, 0, p.width, p.height);
+        p.image(paintingRef.current, 0, 0);
 
         // Usa handsRef.current para acceder a los datos de las manos
 
@@ -99,8 +101,12 @@ export default function CanvasCamera5Component() {
             const y = (index.y + thumb.y) * 0.5;
             // Calcular grosor basado en la distancia entre dedos
             const pinchDistance = p.dist(index.x, index.y, thumb.x, thumb.y);
-            strokeWidthRef.current = Math.max(2, Math.min(50, pinchDistance));
-            setBrushSize([Math.round(strokeWidthRef.current)])
+            const newStrokeWidth = Math.max(2, Math.min(50, pinchDistance));
+
+            if (newStrokeWidth !== strokeWidthRef.current) {
+              strokeWidthRef.current = newStrokeWidth;
+              setBrushSize([Math.round(newStrokeWidth)]);
+            }
 
             p.fill(255, 0, 255); // Color magenta como en el ejemplo
             p.noStroke();
@@ -125,7 +131,7 @@ export default function CanvasCamera5Component() {
             const distance = p.dist(index.x, index.y, thumb.x, thumb.y);
             if (distance < 20) {
            
-              paintingRef.current.stroke(255, 255, 0);
+              paintingRef.current.stroke(currentColor);
               paintingRef.current.strokeWeight(strokeWidthRef.current * 0.5);
               paintingRef.current.line(
                 previousPosRef.current.x,
@@ -156,8 +162,6 @@ export default function CanvasCamera5Component() {
             );
           }
         }
-
-        p.image(paintingRef.current, 0, 0);
       };
 
       p.keyPressed = () => {
@@ -170,19 +174,6 @@ export default function CanvasCamera5Component() {
   );
 
   const { containerRef, p5Instance } = useP5Sketch(sketch);
-
-  useEffect(() => {
-    appStateRef.current = appState;
-    // Controla el bucle de p5.js basado en el estado de la app
-    if (p5Instance) {
-      if (appState === "running") {
-        p5Instance.loop(); // Inicia el bucle de dibujo
-      } else {
-        p5Instance.noLoop(); // Detiene el bucle
-        p5Instance.redraw(); //
-      }
-    }
-  }, [appState, p5Instance]);
 
   useEffect(() => {
     appStateRef.current = appState;

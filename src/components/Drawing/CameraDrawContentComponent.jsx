@@ -29,7 +29,7 @@ export default function CameraDrawContentComponent() {
     <>
        <div
             className="bg-white rounded-lg shadow-2xl mx-autos  relative"
-            style={{ width: "700px", height: "500px" }}
+            style={{ width: "700px", height: "494px" }}
           >
         
             <div
