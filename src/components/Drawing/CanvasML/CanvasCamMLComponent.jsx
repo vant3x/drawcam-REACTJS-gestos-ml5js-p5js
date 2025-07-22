@@ -16,10 +16,12 @@ export default function CanvasCamera5Component() {
   const {
     gestureMode,
     cameraActive,
+    brushSize,
     setCameraActive,
     setStartHandPoseDetection,
     startHandPoseDetection,
     setClearCanvas,
+    setBrushSize,
     setPaintingRef,
   } = AppContext;
 
@@ -98,6 +100,7 @@ export default function CanvasCamera5Component() {
             // Calcular grosor basado en la distancia entre dedos
             const pinchDistance = p.dist(index.x, index.y, thumb.x, thumb.y);
             strokeWidthRef.current = Math.max(2, Math.min(50, pinchDistance));
+            setBrushSize([Math.round(strokeWidthRef.current)])
 
             p.fill(255, 0, 255); // Color magenta como en el ejemplo
             p.noStroke();

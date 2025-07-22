@@ -38,12 +38,14 @@ export default function ToolsPanelContainer({currentTool})  {
       <div className="bg-gray-800 border-b border-gray-700 p-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-1">
-            <Button variant="ghost" size="sm" className="text-white hover:bg-gray-700">
+    { /*       <Button variant="ghost" size="sm" className="text-white hover:bg-gray-700">
               <Upload className="h-4 w-4" />
-            </Button>
+    </Button>*/}
             <Button variant="ghost" size="sm" className="text-white hover:bg-gray-700">
-              <Download className="h-4 w-4" />
+            Descargar dibujo  <Download className="h-4 w-4" />
             </Button>
+
+            
             <Separator orientation="vertical" className="h-6 bg-gray-600" />
             <Button variant="ghost" size="sm" className="text-white hover:bg-gray-700">
               <Undo className="h-4 w-4" />

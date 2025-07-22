@@ -11,7 +11,8 @@ import {
   ImageIcon,
   RotateCcw,
   Settings,
-  Pause
+  Pause,
+  Download
 } from "lucide-react";
 import CameraActiveComponent from "../CameraActiveComponent";
 
@@ -113,6 +114,15 @@ export default function RightPanelControlComponent() {
               <RotateCcw className="h-4 w-4 mr-2" />
               Limpiar Canvas
             </Button>
+  
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full bg-transparent"
+            >
+            Descargar dibujo con imagen de fondo  <Download className="h-4 w-4" />
+            </Button>
+
             <Button
               variant="outline"
               size="sm"
@@ -121,6 +131,7 @@ export default function RightPanelControlComponent() {
               <Settings className="h-4 w-4 mr-2" />
               Configuración
             </Button>
+
           </div>
         </div>
       </div>
