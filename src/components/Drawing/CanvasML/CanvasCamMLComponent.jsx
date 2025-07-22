@@ -20,6 +20,7 @@ export default function CanvasCamera5Component() {
     setStartHandPoseDetection,
     startHandPoseDetection,
     setClearCanvas,
+    setPaintingRef,
   } = AppContext;
 
   const [appState, setAppState] = useState("init");
@@ -51,6 +52,7 @@ export default function CanvasCamera5Component() {
       p.setup = () => {
         p.createCanvas(700, 490);
         paintingRef.current = p.createGraphics(700, 490);
+        setPaintingRef(paintingRef.current);
         paintingRef.current.clear();
         isInitializedRef.current = true;
         p.noLoop(); // Detiene el bucle de dibujo automático

@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import { useReducer } from "react";
 import appContext from "./appContext";
 import appReducer from "./appReducer";
 
@@ -15,6 +15,7 @@ import {
   IS_DRAWING,
   SET_START_HAND_POSE_DETECTION, 
   SET_CLEAR_CANVAS,
+  SET_PAINTING_REF,
 } from "../../types";
 
 const AppState = ({ children }) => {
@@ -40,6 +41,7 @@ const AppState = ({ children }) => {
     isDrawing: false,
     startHandPoseDetection: null, 
     clearCanvas: null,
+    paintingRef: null,
   };
 
 
@@ -60,6 +62,13 @@ const AppState = ({ children }) => {
     dispatch({
       type: SET_CLEAR_CANVAS,
       payload: func,
+    });
+  };
+
+  const setPaintingRef = (ref) => {
+    dispatch({
+      type: SET_PAINTING_REF,
+      payload: ref,
     });
   };
 
@@ -164,6 +173,8 @@ const AppState = ({ children }) => {
         setStartHandPoseDetection,
         clearCanvas: state.clearCanvas,
         setClearCanvas,
+        paintingRef: state.paintingRef,
+        setPaintingRef,
       }}
     >
       {children}

@@ -31,7 +31,7 @@ export default function CameraDrawContentComponent() {
             className="bg-white rounded-lg shadow-2xl mx-autos  relative"
             style={{ width: "700px", height: "500px" }}
           >
-            {/* Canvas simulado */}
+        
             <div
               className="w-full h-[100%] rounded-lg cursor-crosshair relative overflow-hidden"
               style={{
@@ -41,7 +41,6 @@ export default function CameraDrawContentComponent() {
               onMouseDown={() => setIsDrawing(true)}
               onMouseUp={() => setIsDrawing(false)}
             >
-              {/* Simulación de dibujo */}
               <CanvasCamera5Component/>
               {/* Indicador de herramienta activa */}
               <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded text-sm w-[30%]" >

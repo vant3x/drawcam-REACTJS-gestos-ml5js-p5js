@@ -1,4 +1,5 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
+import p5 from "p5";
 import appContext from "../../context/app/appContext";
 import { Brush, Circle, Minus } from "lucide-react";
 import ColorsControlComponent from "./Controls/ColorsControlComponent";
@@ -13,6 +14,7 @@ const brushes = [
 
 export default function DrawCanvasAreaComponent() {
   const AppContext = useContext(appContext);
+  const sketchRef = useRef();
 
   const {
     currentTool,
@@ -24,7 +26,30 @@ export default function DrawCanvasAreaComponent() {
     zoom,
     setIsDrawing,
     isDrawing,
+    paintingRef,
   } = AppContext;
+
+  useEffect(() => {
+    if (!paintingRef) return;
+
+    const sketch = (p) => {
+      p.setup = () => {
+        p.createCanvas(550, 400).parent(sketchRef.current);
+      };
+
+      p.draw = () => {
+        p.background(255);
+        p.image(paintingRef, 0, 0);
+      };
+    };
+
+    let p5Instance = new p5(sketch);
+
+    return () => {
+      p5Instance.remove();
+    };
+  }, [paintingRef]);
+
   return (
     <>
       <div className="flex-1 flex flex-col">
@@ -37,6 +62,7 @@ export default function DrawCanvasAreaComponent() {
             >
               {/* Canvas simulado */}
               <div
+                ref={sketchRef}
                 className="w-full h-[100%] rounded-lg cursor-crosshair relative overflow-hidden"
                 style={{
                   transform: `scale(${zoom / 100})`,

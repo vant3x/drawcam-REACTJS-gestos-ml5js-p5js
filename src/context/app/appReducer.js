@@ -11,6 +11,7 @@ import {
   IS_DRAWING,
   SET_CLEAR_CANVAS,
   SET_START_HAND_POSE_DETECTION,
+  SET_PAINTING_REF,
 } from "../../types";
 
 const appReducer = (state, action) => {
@@ -97,6 +98,11 @@ const appReducer = (state, action) => {
       return {
         ...state,
         clearCanvas: action.payload,
+      };
+    case SET_PAINTING_REF:
+      return {
+        ...state,
+        paintingRef: action.payload,
       };
     default:
       return state;
