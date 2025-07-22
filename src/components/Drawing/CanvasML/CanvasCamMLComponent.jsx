@@ -19,7 +19,7 @@ export default function CanvasCamera5Component() {
     setCameraActive,
     setStartHandPoseDetection,
     startHandPoseDetection,
-    setClearCanvas
+    setClearCanvas,
   } = AppContext;
 
   const [appState, setAppState] = useState("init");
@@ -203,12 +203,14 @@ export default function CanvasCamera5Component() {
         clearPainting();
       }
     };
+    
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+
   }, [clearPainting]);
 
   useEffect(() => {
-    setClearCanvas(clearPainting); 
+    setClearCanvas(clearPainting);
   }, [clearPainting]);
 
   return (

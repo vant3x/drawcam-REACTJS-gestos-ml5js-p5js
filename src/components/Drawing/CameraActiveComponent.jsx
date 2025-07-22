@@ -14,14 +14,21 @@ export default function CameraActiveComponent() {
 
     const [showCameraContent, setShowCamera] = useState(false);
 
-    const { gestureMode, cameraActive, setCameraActive } = AppContext;
+    const { gestureMode, cameraActive, setCameraActive,
+      clearCanvas
+    } = AppContext;
 
     const startCamera = () => {
       setCameraActive(!cameraActive);
       setTimeout(() => {
         setShowCamera(true);
       }, 1300);
+
+      clearCanvas();
+
     };
+    
+
 
   return (
     <div className="p-4 border-b border-gray-700">
