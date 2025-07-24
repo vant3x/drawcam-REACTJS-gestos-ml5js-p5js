@@ -76,7 +76,6 @@ export default function RightPanelControlComponent() {
     setOcrResult("");
 
     try {
-      // 1. Convertir canvas a imagen
       const imageData = canvasToImage();
       if (!imageData) {
         setOcrResult("Error: No se pudo convertir el dibujo a imagen");
@@ -84,34 +83,34 @@ export default function RightPanelControlComponent() {
         return;
       }
 
-      // 2. Crear worker con múltiples idiomas
       setOcrProgress("Inicializando OCR...");
       const worker = await createWorker(['eng', 'spa']);
 
-      // 3. Procesar con OCR
+  
       const { data: { text, confidence } } = await worker.recognize(
         imageData,
         {
-          lang: 'eng+spa' // Inglés y español simultáneamente
-        },
-        {
-          logger: m => {
-            console.log(m);
-            if (m.status === 'recognizing text') {
-              setOcrProgress(`Reconociendo texto... ${Math.round(m.progress * 100)}%`);
-            }
-          }
+          lang: 'eng+spa' 
         }
       );
 
       // 4. Mostrar resultados
       if (text.trim()) {
         setOcrResult(`Texto detectado (${Math.round(confidence)}% confianza): ${text}`);
+
+        if (Math.round(confidence) > 78) {
+          console.log('melo papi')
+        } 
+        else if (Number.isInteger(Number(text)) || Math.round(confidence) < 78) {
+          console.log('papi no es necesario gemini aun')
+        }
+        else {
+          console.log('tocó gemini bro')
+        }
       } else {
         setOcrResult("No se detectó texto en el dibujo. Intenta con trazos más claros.");
       }
 
-      // 5. Limpiar worker
       await worker.terminate();
 
     } catch (error) {
