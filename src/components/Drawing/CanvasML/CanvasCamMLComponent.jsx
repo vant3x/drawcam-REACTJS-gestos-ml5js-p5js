@@ -36,10 +36,17 @@ export default function CanvasCamera5Component() {
   const isInitializedRef = useRef(false);
   const strokeWidthRef = useRef(8);
 
+  const currentColorRef = useRef(currentColor);
+
   const { isML5Loaded, startDetection } = useML5HandPose((results) => {
     handsRef.current = results;
   });
 
+    useEffect(() => {
+    currentColorRef.current = currentColor;
+  }, [currentColor]);
+
+  
   const clearPainting = useCallback(() => {
     if (paintingRef.current) {
       paintingRef.current.clear();
@@ -132,8 +139,11 @@ export default function CanvasCamera5Component() {
 
             const distance = p.dist(index.x, index.y, thumb.x, thumb.y);
             if (distance < 20) {
+
+              const p5Color = p.color(currentColorRef.current);
+              
            
-              paintingRef.current.stroke(currentColor);
+              paintingRef.current.stroke(p5Color);
               paintingRef.current.strokeWeight(strokeWidthRef.current * 0.5);
               paintingRef.current.line(
                 previousPosRef.current.x,

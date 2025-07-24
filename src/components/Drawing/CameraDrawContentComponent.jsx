@@ -27,7 +27,6 @@ export default function CameraDrawContentComponent() {
     cameraActive
   } = AppContext;
 
-  console.log(currentColor)
   return (
     <>
        <div

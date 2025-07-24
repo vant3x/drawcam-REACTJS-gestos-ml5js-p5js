@@ -1,23 +1,14 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import appContext from "./../../../context/app/appContext";
-
 import { Button } from "../../ui/button";
-import { Separator } from "../../ui/separator";
 import { Textarea } from "../../ui/textarea";
 import { Alert, AlertDescription } from "../../ui/alert";
-
-import {
-  Type,
-  ImageIcon,
-  RotateCcw,
-  Settings,
-  Pause,
-  Download
-} from "lucide-react";
-
+import { Type, ImageIcon, RotateCcw, Settings, Download } from "lucide-react";
 import { createWorker } from "tesseract.js";
-
 import CameraActiveComponent from "../CameraActiveComponent";
+// Corregido: Importa la función correcta desde la ruta correcta.
+import { callGeminiForImageOcr } from "./../../../utils/callGeminiForImageOCR";
+import { Loader } from "../../Loader";
 
 export default function RightPanelControlComponent() {
   const [ocrResult, setOcrResult] = useState("");
@@ -25,217 +16,139 @@ export default function RightPanelControlComponent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [ocrProgress, setOcrProgress] = useState("");
 
-  const [imageData, setImageData] = useState(null);
-
   const AppContext = useContext(appContext);
-
-  const { gestureMode, paintingRef, clearCanvas } = AppContext;
-
-  const performOCR = async () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      setOcrResult("Texto reconocido: 'Hola mundo' detectado en el dibujo");
-      setIsProcessing(false);
-    }, 2000);
-  };
-
-  const generateImage = async () => {
-    if (!sketchPrompt.trim()) return;
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      alert("Imagen generada con IA (simulado)");
-    }, 3000);
-  };
+  const { paintingRef, clearCanvas } = AppContext;
 
   const canvasToImage = () => {
     if (!paintingRef || !paintingRef.canvas) {
-      console.warn("paintingRef no está disponible o no tiene canvas");
+      console.warn("paintingRef no está disponible.");
       return null;
     }
-
-    try {
-      // Convertir el canvas de p5 a base64
-      const dataURL = paintingRef.canvas.toDataURL('image/png');
-      return dataURL;
-    } catch (error) {
-      console.error("Error al convertir canvas a imagen:", error);
-      return null;
-    }
+    return paintingRef.canvas.toDataURL('image/png');
   };
 
-  // Función principal de OCR usando el paintingRef
   const performOCRFromCanvas = async () => {
     if (!paintingRef) {
-      setOcrResult("No hay dibujo disponible para procesar");
+      setOcrResult("No hay dibujo para analizar.");
       return;
     }
 
     setIsProcessing(true);
-    setOcrProgress("Preparando imagen...");
+    setOcrProgress("Iniciando OCR...");
     setOcrResult("");
 
+    const imageDataUrl = canvasToImage();
+    if (!imageDataUrl) {
+      setOcrResult("Error al obtener la imagen del dibujo.");
+      setIsProcessing(false);
+      return;
+    }
+
+    // Lee la API Key aquí, en el componente.
+    const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
     try {
-      const imageData = canvasToImage();
-      if (!imageData) {
-        setOcrResult("Error: No se pudo convertir el dibujo a imagen");
-        setIsProcessing(false);
-        return;
-      }
-
-      setOcrProgress("Inicializando OCR...");
+      setOcrProgress("Analizando con OCR local (Tesseract)...");
       const worker = await createWorker(['eng', 'spa']);
-
-  
-      const { data: { text, confidence } } = await worker.recognize(
-        imageData,
-        {
-          lang: 'eng+spa' 
-        }
-      );
-
-      // 4. Mostrar resultados
-      if (text.trim()) {
-        setOcrResult(`Texto detectado (${Math.round(confidence)}% confianza): ${text}`);
-
-        if (Math.round(confidence) > 78) {
-          console.log('melo papi')
-        } 
-        else if (Number.isInteger(Number(text)) || Math.round(confidence) < 78) {
-          console.log('papi no es necesario gemini aun')
-        }
-        else {
-          console.log('tocó gemini bro')
-        }
-      } else {
-        setOcrResult("No se detectó texto en el dibujo. Intenta con trazos más claros.");
-      }
-
+     /* await worker.setParameters({
+        tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÁÉÍÓÚáéíóúÑñ.,- ',
+      tessedit_pageseg_mode: '6'
+      })*/
+      const { data: { text, confidence } } = await worker.recognize(imageDataUrl);
       await worker.terminate();
 
-    } catch (error) {
-      console.error("Error durante el OCR:", error);
-      setOcrResult("Error al procesar el dibujo. Inténtalo de nuevo.");
+      console.log(confidence)
+      console.log(text)
+      if (!text.trim() || confidence < 85) {
+        setOcrProgress("Resultado local no confiable. Usando IA.");
+      
+        const geminiResult = await callGeminiForImageOcr(imageDataUrl, geminiApiKey);
+        setOcrResult(geminiResult);
+      } else {
+        setOcrResult(`Tesseract (${Math.round(confidence)}%): ${text}`);
+      }
+
+    } catch (tesseractError) {
+      console.warn("Tesseract.js falló. Usando IA avanzada como respaldo.", tesseractError);
+      setOcrProgress("OCR local falló. Probando con IA avanzada (Gemini)...");
+      
+      try {
+       
+        const geminiResult = await callGeminiForImageOcr(imageDataUrl, geminiApiKey);
+        setOcrResult(geminiResult);
+      } catch (geminiError) {
+        setOcrResult("Ambos sistemas de OCR (local y IA) fallaron.");
+      }
     } finally {
       setIsProcessing(false);
       setOcrProgress("");
     }
   };
 
-    const downloadImage = (image) => {
-    if (!paintingRef ||  !paintingRef.canvas) {
-      console.error("La referencia al canvas de dibujo no está disponible.");
-      alert("No hay nada que descargar todavía.");
-      return;
-    }
-
-    const base64Image = paintingRef.canvas.toDataURL("image/png");
-
-   
-    console.log("Imagen en Base64:", base64Image);
-
+  const downloadImage = () => {
+    if (!paintingRef || !paintingRef.canvas) return;
     const link = document.createElement("a");
-    link.href = base64Image;
-    link.download =`dibujo_${new Date().getTime()}.png`; 
-
-    document.body.appendChild(link);
+    link.href = paintingRef.canvas.toDataURL("image/png");
+    link.download = `dibujo_${new Date().getTime()}.png`;
     link.click();
-    document.body.removeChild(link);
   };
 
-
   const handleClearCanvas = () => {
-    if (clearCanvas) { 
-      clearCanvas(); 
-    } else {
-      console.warn("La función clearCanvas no está disponible en el contexto.");
-    }
+    if (clearCanvas) clearCanvas();
   };
 
   return (
-    <>
-      <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
-        {/* Cámara de gestos */}
-        <CameraActiveComponent/>
-
-        {/* Capas */}
-        {/* <LayersArea/>*/}
-
-        {/* IA Tools */}
-        <div className="p-4 border-b border-gray-700">
-          <h3 className="text-sm font-semibold mb-3">Herramientas IA</h3>
-          <div className="space-y-2">
-            <Button
-              onClick={performOCRFromCanvas}
-              disabled={isProcessing}
-              size="sm"
-              className="w-full"
-            >
-              <Type className="h-4 w-4 mr-2" />
-              {isProcessing ? "Procesando..." : "OCR Texto"}
-            </Button>
-
-            <Button
-              onClick={generateImage}
-              disabled={isProcessing || !sketchPrompt.trim()}
-              size="sm"
-              className="w-full"
-            >
-              <ImageIcon className="h-4 w-4 mr-2" />
-              {isProcessing ? "Generando..." : "Img2Img"}
-            </Button>
-            <Textarea
-              placeholder="Describe cómo mejorar tu boceto..."
-              value={sketchPrompt}
-              onChange={(e) => setSketchPrompt(e.target.value)}
-              rows={2}
-              className="text-xs"
-            />
-          </div>
-          {ocrResult && (
-            <Alert className="mt-2">
-              <AlertDescription className="text-xs">
-                {ocrResult}
-              </AlertDescription>
-            </Alert>
-          )}
+    <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
+      <CameraActiveComponent />
+      <div className="p-4 border-b border-gray-700">
+        <h3 className="text-sm font-semibold mb-3">Herramientas IA</h3>
+        <div className="space-y-2 ">
+          <Button onClick={performOCRFromCanvas} disabled={isProcessing} size="sm" className="w-full mb-2">
+            <Type className="h-4 w-4 mr-2" />
+            {isProcessing ? ocrProgress : "OCR Texto"}
+          </Button>
+        {
+          isProcessing &&   (
+            <div className="flex justify-center items-center h-12 mb-2">
+            <Loader/></div>
+          )
+        }
+        {ocrResult && (
+          <Alert className="mt-4 mb-2">
+            <AlertDescription className="text-xs">{ocrResult}</AlertDescription>
+          </Alert>
+        )}
+          <Button disabled size="sm" className="w-full mt-4">
+            <ImageIcon className="h-4 w-4 mr-2" />
+            Img2Img (Próximamente)
+          </Button>
+          <Textarea
+            placeholder="Describe cómo mejorar tu boceto..."
+            value={sketchPrompt}
+            onChange={(e) => setSketchPrompt(e.target.value)}
+            rows={2}
+            className="text-xs"
+          />
         </div>
-
-        {/* Acciones rápidas */}
-        <div className="p-4">
-          <h3 className="text-sm font-semibold mb-3">Acciones</h3>
-          <div className="space-y-2">
-            <Button
-              onClick={handleClearCanvas}
-              variant="outline"
-              size="sm"
-              className="w-full bg-transparent"
-            >
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Limpiar Canvas
-            </Button>
-  
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full bg-transparent"
-              onClick={downloadImage}
-            >
-            Descargar dibujo con imagen de fondo  <Download className="h-4 w-4" />
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full bg-transparent"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Configuración
-            </Button>
-
-          </div>
+        
+      </div>
+      <div className="p-4">
+        <h3 className="text-sm font-semibold mb-3">Acciones</h3>
+        <div className="space-y-2">
+          <Button onClick={handleClearCanvas} variant="outline" size="sm" className="w-full bg-transparent">
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Limpiar Canvas
+          </Button>
+          <Button variant="outline" size="sm" className="w-full bg-transparent" onClick={downloadImage}>
+            <Download className="h-4 w-4 mr-2" />
+            Descargar Dibujo
+          </Button>
+          <Button variant="outline" size="sm" className="w-full bg-transparent">
+            <Settings className="h-4 w-4 mr-2" />
+            Configuración
+          </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
