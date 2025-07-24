@@ -1,7 +1,7 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import p5 from "p5";
 import appContext from "../../context/app/appContext";
-import { Brush, Circle, Minus } from "lucide-react";
+import { Brush, Circle, Minus, AudioLines } from "lucide-react";
 import ColorsControlComponent from "./Controls/ColorsControlComponent";
 import CameraDrawContentComponent from "./CameraDrawContentComponent";
 
@@ -31,7 +31,6 @@ export default function DrawCanvasAreaComponent() {
 
   useEffect(() => {
     if (!paintingRef) return;
-
     const sketch = (p) => {
       // Dimensiones del canvas original y destino
       const originalWidth = 700;
@@ -83,7 +82,7 @@ export default function DrawCanvasAreaComponent() {
         <div className="flex-1 bg-gray-700 p-4 overflow-auto">
           <div className="flex gap-4 h-full">
             <div
-              className="bg-white rounded-lg shadow-2xl mx-autos  relative"
+              className="bg-white rounded-lg shadow-2xl mx-autos  relative "
               style={{ width: "550px", height: "400px" }}
             >
               {/* Canvas simulado */}
@@ -126,7 +125,23 @@ export default function DrawCanvasAreaComponent() {
             </div>
 
             <CameraDrawContentComponent />
+        
           </div>
+
+          <div className="absolute w-[20%] bottom-52 border border-gray-950 px-6 py-4 mt-4">
+              <h3 className="flex text-bold font-bold text-white">Controles por voz <AudioLines className="ml-2 mr-2"/></h3>
+              <ul className="ml-10 mt-4 list-disc">
+                <li>Cambiar tamaño</li>
+                <li>Cambiar Color</li>
+                <li>Activar Transcripción</li>
+                <li>Generar Imagen de boceto</li>
+                <li>Bloquear capa y activar seguimiento</li>
+                <li>Descargar dibujo</li>
+                <li>Limpiar canvas</li>
+              </ul>
+            </div>
+
+
         </div>
 
         <ColorsControlComponent />

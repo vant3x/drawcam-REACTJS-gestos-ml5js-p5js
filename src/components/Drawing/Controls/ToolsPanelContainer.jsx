@@ -29,7 +29,32 @@ export default function ToolsPanelContainer({currentTool})  {
 
   const AppContext = useContext(appContext);
 
-  const { cameraActive, zoom, setCurrentTool, setZoom } = AppContext;
+  const { cameraActive, zoom, setCurrentTool, setZoom, paintingRef } = AppContext;
+
+
+  const downloadImage = (image) => {
+    if (!paintingRef ||  !paintingRef.canvas) {
+      console.error("La referencia al canvas de dibujo no está disponible.");
+      alert("No hay nada que descargar todavía.");
+      return;
+    }
+
+    const base64Image = paintingRef.canvas.toDataURL("image/png");
+
+    // -> Aquí tienes el base64 que también solicitaste. Puedes usarlo como necesites.
+    console.log("Imagen en Base64:", base64Image);
+
+    const link = document.createElement("a");
+    link.href = base64Image;
+    link.download =`dibujo_${new Date().getTime()}.png`; 
+
+    // 4. Simulamos un clic en el enlace para descargar y lo removemos
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  
 
     return (
 
@@ -41,7 +66,7 @@ export default function ToolsPanelContainer({currentTool})  {
     { /*       <Button variant="ghost" size="sm" className="text-white hover:bg-gray-700">
               <Upload className="h-4 w-4" />
     </Button>*/}
-            <Button variant="ghost" size="sm" className="text-white hover:bg-gray-700">
+            <Button onClick={()=> downloadImage()} variant="ghost" size="sm" className="text-white hover:bg-gray-700">
             Descargar dibujo  <Download className="h-4 w-4" />
             </Button>
 

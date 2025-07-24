@@ -24,7 +24,10 @@ export default function CameraDrawContentComponent() {
     zoom,
     setIsDrawing,
     isDrawing,
+    cameraActive
   } = AppContext;
+
+  console.log(currentColor)
   return (
     <>
        <div
@@ -47,11 +50,41 @@ export default function CameraDrawContentComponent() {
                 Dibuja usando tu dedo indice y pulgar
               </div>
 
+            {  /*
+
+              color
+
+              */}
+
+{
+  cameraActive && (
+    <div 
+  className={`absolute bottom-10 left-4 bg-opacity-50 px-3 py-1 rounded text-sm ${
+    currentColor === '#ffffff' || 
+    currentColor === 'white' || 
+    currentColor === '#fff' || 
+    currentColor === '#FFFFFF' || 
+    currentColor === '#FFF' ||
+    currentColor?.toLowerCase() === '#ffffff' ||
+    currentColor?.toLowerCase() === '#fff' ||
+    currentColor?.toLowerCase() === 'white'
+      ? 'text-black' 
+      : 'text-white'
+  }`}
+  style={{ backgroundColor: currentColor }}
+>
+                Color
+              </div>
+  )
+}
+
               {/* Indicador de modo de gesto */}
               <div className="absolute top-4 right-4 bg-blue-600 bg-opacity-80 text-white px-3 py-1 rounded text-sm">
                 Modo:{" "}
                 Cámara
               </div>
+
+              
             </div>
           </div>
     </>

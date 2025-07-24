@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import appContext from "./../../../context/app/appContext";
 
 import { Button } from "../../ui/button";
@@ -14,16 +14,22 @@ import {
   Pause,
   Download
 } from "lucide-react";
+
+import { createWorker } from "tesseract.js";
+
 import CameraActiveComponent from "../CameraActiveComponent";
 
 export default function RightPanelControlComponent() {
   const [ocrResult, setOcrResult] = useState("");
   const [sketchPrompt, setSketchPrompt] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState("");
+
+  const [imageData, setImageData] = useState(null);
 
   const AppContext = useContext(appContext);
 
-  const { gestureMode, clearCanvas } = AppContext;
+  const { gestureMode, paintingRef, clearCanvas } = AppContext;
 
   const performOCR = async () => {
     setIsProcessing(true);
@@ -42,6 +48,101 @@ export default function RightPanelControlComponent() {
     }, 3000);
   };
 
+  const canvasToImage = () => {
+    if (!paintingRef || !paintingRef.canvas) {
+      console.warn("paintingRef no está disponible o no tiene canvas");
+      return null;
+    }
+
+    try {
+      // Convertir el canvas de p5 a base64
+      const dataURL = paintingRef.canvas.toDataURL('image/png');
+      return dataURL;
+    } catch (error) {
+      console.error("Error al convertir canvas a imagen:", error);
+      return null;
+    }
+  };
+
+  // Función principal de OCR usando el paintingRef
+  const performOCRFromCanvas = async () => {
+    if (!paintingRef) {
+      setOcrResult("No hay dibujo disponible para procesar");
+      return;
+    }
+
+    setIsProcessing(true);
+    setOcrProgress("Preparando imagen...");
+    setOcrResult("");
+
+    try {
+      // 1. Convertir canvas a imagen
+      const imageData = canvasToImage();
+      if (!imageData) {
+        setOcrResult("Error: No se pudo convertir el dibujo a imagen");
+        setIsProcessing(false);
+        return;
+      }
+
+      // 2. Crear worker con múltiples idiomas
+      setOcrProgress("Inicializando OCR...");
+      const worker = await createWorker(['eng', 'spa']);
+
+      // 3. Procesar con OCR
+      const { data: { text, confidence } } = await worker.recognize(
+        imageData,
+        {
+          lang: 'eng+spa' // Inglés y español simultáneamente
+        },
+        {
+          logger: m => {
+            console.log(m);
+            if (m.status === 'recognizing text') {
+              setOcrProgress(`Reconociendo texto... ${Math.round(m.progress * 100)}%`);
+            }
+          }
+        }
+      );
+
+      // 4. Mostrar resultados
+      if (text.trim()) {
+        setOcrResult(`Texto detectado (${Math.round(confidence)}% confianza): ${text}`);
+      } else {
+        setOcrResult("No se detectó texto en el dibujo. Intenta con trazos más claros.");
+      }
+
+      // 5. Limpiar worker
+      await worker.terminate();
+
+    } catch (error) {
+      console.error("Error durante el OCR:", error);
+      setOcrResult("Error al procesar el dibujo. Inténtalo de nuevo.");
+    } finally {
+      setIsProcessing(false);
+      setOcrProgress("");
+    }
+  };
+
+    const downloadImage = (image) => {
+    if (!paintingRef ||  !paintingRef.canvas) {
+      console.error("La referencia al canvas de dibujo no está disponible.");
+      alert("No hay nada que descargar todavía.");
+      return;
+    }
+
+    const base64Image = paintingRef.canvas.toDataURL("image/png");
+
+   
+    console.log("Imagen en Base64:", base64Image);
+
+    const link = document.createElement("a");
+    link.href = base64Image;
+    link.download =`dibujo_${new Date().getTime()}.png`; 
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
 
   const handleClearCanvas = () => {
@@ -66,7 +167,7 @@ export default function RightPanelControlComponent() {
           <h3 className="text-sm font-semibold mb-3">Herramientas IA</h3>
           <div className="space-y-2">
             <Button
-              onClick={performOCR}
+              onClick={performOCRFromCanvas}
               disabled={isProcessing}
               size="sm"
               className="w-full"
@@ -119,6 +220,7 @@ export default function RightPanelControlComponent() {
               variant="outline"
               size="sm"
               className="w-full bg-transparent"
+              onClick={downloadImage}
             >
             Descargar dibujo con imagen de fondo  <Download className="h-4 w-4" />
             </Button>

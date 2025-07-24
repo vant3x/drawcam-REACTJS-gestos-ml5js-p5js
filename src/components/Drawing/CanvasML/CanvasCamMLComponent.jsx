@@ -96,6 +96,8 @@ export default function CanvasCamera5Component() {
           }
 
           if (leftHand && leftHand.index && leftHand.thumb) {
+
+         
             const { index, thumb } = leftHand;
             const x = (index.x + thumb.x) * 0.5;
             const y = (index.y + thumb.y) * 0.5;

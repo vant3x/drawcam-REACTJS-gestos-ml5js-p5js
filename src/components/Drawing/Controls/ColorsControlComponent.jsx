@@ -1,4 +1,4 @@
-import { useState, useContext } from "react"
+import { useState, useContext, useEffect } from "react"
 import appContext from "./../../../context/app/appContext";
 
 import { Slider } from "../../ui/slider";
@@ -35,6 +35,8 @@ export default function ColorsControlComponent() {
   const AppContext = useContext(appContext);
 
   const { currentColor, setCurrentColor, brushSize, setBrushSize, brushOpacity, setBrushOpacity } = AppContext;
+
+
   return (
     <>
       <div className="bg-gray-800 border-t border-gray-700 p-3">
