@@ -38,7 +38,7 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
   const strokeWidthRef = useRef(8);
 
   const currentColorRef = useRef(currentColor);
-
+  const isChangeWithHandColorRef = useRef(isChangeWithHandColor);
 
     const colorDisplayRectRef = useRef(null);
     const zoomRef = useRef(zoom);
@@ -58,6 +58,9 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
   }, [currentColor]);
 
 
+  useEffect(() => {
+    isChangeWithHandColorRef.current = isChangeWithHandColor; 
+  }, [isChangeWithHandColor]);
   // 2. Actualiza la ref del div de color y del zoom cuando cambian las props
   useEffect(() => {
     colorDisplayRectRef.current = colorDisplayRect;
@@ -193,7 +196,7 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
               x,
               y - strokeWidthRef.current / 2 - 10
             );
-            if (isChangeWithHandColor) {
+            if (isChangeWithHandColorRef.current) {
               // Activar detección de swipe y rastrear posición de la mano izquierda
               swipeDetectionActiveRef.current = true;
               detectSwipe({ x, y });
@@ -307,7 +310,7 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
         }
       };
     },
-    [clearPainting, isChangeWithHandColor, detectSwipe]
+    [clearPainting, detectSwipe]
   );
 
   const { containerRef, p5Instance } = useP5Sketch(sketch);
