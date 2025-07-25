@@ -16,6 +16,9 @@ import {
   SET_START_HAND_POSE_DETECTION, 
   SET_CLEAR_CANVAS,
   SET_PAINTING_REF,
+  IS_CHANGE_HAND_COLOR,
+  VOICE_CONTROL_STATUS,
+  VOICE_CONTROL_MODE_CONTROL
 } from "../../types";
 
 const AppState = ({ children }) => {
@@ -32,6 +35,7 @@ const AppState = ({ children }) => {
     currentBrush: 0,
     loading: null,
     ocrActive: false,
+    isChangeWithHandColor: false,
     gestureMode: "draw",
     cameraActive: false,
     layers: initialLayers,
@@ -40,8 +44,9 @@ const AppState = ({ children }) => {
     base64: "",
     isDrawing: false,
     startHandPoseDetection: null, 
-    clearCanvas: null,
     paintingRef: null,
+    voiceControlStatus: false,
+    clearCanvas: null,
   };
 
 
@@ -136,6 +141,15 @@ const AppState = ({ children }) => {
     });
   };
 
+
+  const setIsChangeColorWithHand = (isChangeWithHandColor) => {
+    dispatch({
+      type: IS_CHANGE_HAND_COLOR,
+      payload:  isChangeWithHandColor,
+    });
+  };
+
+
   const resetState = () => {
     dispatch({
       type: RESET_STATE,
@@ -159,6 +173,7 @@ const AppState = ({ children }) => {
         img2img: state.zoom,
         base64: state.zoom,
         isDrawing: state.isDrawing,
+        isChangeWithHandColor: state.isChangeWithHandColor,
         setCurrentTool,
         setCurrentColor,
         setBrushSize,
@@ -175,6 +190,7 @@ const AppState = ({ children }) => {
         setClearCanvas,
         paintingRef: state.paintingRef,
         setPaintingRef,
+        setIsChangeColorWithHand
       }}
     >
       {children}

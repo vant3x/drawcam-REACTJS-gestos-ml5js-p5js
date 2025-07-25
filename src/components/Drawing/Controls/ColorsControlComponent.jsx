@@ -4,7 +4,7 @@ import appContext from "./../../../context/app/appContext";
 import { Slider } from "../../ui/slider";
 
 
-const colors = [
+export const colors = [
   "#000000",
   "#FFFFFF",
   "#FF0000",

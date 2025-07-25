@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import appContext from "./../../context/app/appContext";
 import { Brush, Circle, Minus } from "lucide-react";
 import ColorsControlComponent from "./Controls/ColorsControlComponent";
@@ -27,10 +27,32 @@ export default function CameraDrawContentComponent() {
     cameraActive
   } = AppContext;
 
+    // 1. Crea una referencia para el div de "Color"
+    const colorDisplayRef = useRef(null);
+    // 2. Estado para guardar las dimensiones y posición del div de "Color"
+    const [colorDisplayRect, setColorDisplayRect] = useState(null);
+    const canvasWrapperRef = useRef(null); 
+  
+   
+  useEffect(() => {
+    // Asegurarse de que ambas referencias existan antes de calcular
+    if (colorDisplayRef.current && canvasWrapperRef.current) {
+      const colorRect = colorDisplayRef.current.getBoundingClientRect();
+      const wrapperRect = canvasWrapperRef.current.getBoundingClientRect();
+
+      // Calcular las coordenadas del div de color RELATIVAS al contenedor base (700x494)
+      setColorDisplayRect({
+        x: colorRect.left - wrapperRect.left,
+        y: colorRect.top - wrapperRect.top,
+        width: colorRect.width,
+        height: colorRect.height,
+      });
+    }
+  }, [cameraActive, currentColor]);
   return (
     <>
        <div
-            className="bg-white rounded-lg shadow-2xl mx-autos  relative"
+            className="bg-white rounded-lg shadow-2xl mx-autos  relative"    ref={canvasWrapperRef} 
             style={{ width: "700px", height: "494px" }}
           >
         
@@ -43,7 +65,8 @@ export default function CameraDrawContentComponent() {
               onMouseDown={() => setIsDrawing(true)}
               onMouseUp={() => setIsDrawing(false)}
             >
-              <CanvasCamera5Component/>
+              <CanvasCamera5Component  colorDisplayRect={colorDisplayRect}
+                zoom={zoom} />
               {/* Indicador de herramienta activa */}
               <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded text-sm w-[30%]" >
                 Dibuja usando tu dedo indice y pulgar
@@ -57,7 +80,7 @@ export default function CameraDrawContentComponent() {
 
 {
   cameraActive && (
-    <div 
+    <div ref={colorDisplayRef} 
   className={`absolute bottom-10 left-4 bg-opacity-50 px-3 py-1 rounded text-sm ${
     currentColor === '#ffffff' || 
     currentColor === 'white' || 

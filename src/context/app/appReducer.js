@@ -12,6 +12,9 @@ import {
   SET_CLEAR_CANVAS,
   SET_START_HAND_POSE_DETECTION,
   SET_PAINTING_REF,
+  IS_CHANGE_HAND_COLOR,
+  VOICE_CONTROL_STATUS,
+  VOICE_CONTROL_MODE_CONTROL
 } from "../../types";
 
 const appReducer = (state, action) => {
@@ -29,6 +32,7 @@ const appReducer = (state, action) => {
         currentBrush: 0,
         currentColor: "#FFFF00",
         brushSize: [5],
+        isChangeWithHandColor: false,
         loading: null,
         ocrActive: false,
         gestureMode: "draw",
@@ -39,6 +43,7 @@ const appReducer = (state, action) => {
         base64: "",
         isDrawing: false,
         startHandPoseDetection: null,
+        voiceControlStatus: false,
         clearCanvas: null,
       };
 
@@ -103,6 +108,11 @@ const appReducer = (state, action) => {
       return {
         ...state,
         paintingRef: action.payload,
+      };
+    case IS_CHANGE_HAND_COLOR:
+      return {
+        ...state,
+        isChangeWithHandColor: action.payload,
       };
     default:
       return state;
