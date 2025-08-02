@@ -65,7 +65,7 @@ export default function CameraDrawContentComponent() {
               onMouseDown={() => setIsDrawing(true)}
               onMouseUp={() => setIsDrawing(false)}
             >
-              <CanvasCamera5Component  colorDisplayRect={colorDisplayRect}
+              <CanvasCamera5Component
                 zoom={zoom} />
               {/* Indicador de herramienta activa */}
               <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded text-sm w-[30%]" >

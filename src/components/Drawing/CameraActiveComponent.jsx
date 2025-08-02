@@ -9,7 +9,7 @@ import {
   import { Button } from "../ui/button";
 
 
-export default function CameraActiveComponent() {
+export default function CameraActiveComponent({resetOcr,  onActivateVoice, onDeactivateVoice, isVoiceActive }) {
     const AppContext = useContext(appContext);
 
     const [showCameraContent, setShowCamera] = useState(false);
@@ -25,7 +25,8 @@ export default function CameraActiveComponent() {
       }, 1300);
 
       clearCanvas();
-
+      resetOcr();
+      onActivateVoice();
     };
     
 

@@ -13,9 +13,12 @@ const brushes = [
   { name: "Aerógrafo", icon: Circle, size: 25 },
 ];
 
-export default function DrawCanvasAreaComponent() {
+export default function DrawCanvasAreaComponent({ onActivateVoice, onDeactivateVoice, isVoiceActive, voiceControlRef }) {
   const AppContext = useContext(appContext);
   const sketchRef = useRef();
+
+VoiceControlOptions
+
 
   const {
     currentTool,
@@ -128,7 +131,7 @@ export default function DrawCanvasAreaComponent() {
             <CameraDrawContentComponent />
         
           </div>
-                <VoiceControlOptions/>
+                <VoiceControlOptions  ref={voiceControlRef} />
 
 
 

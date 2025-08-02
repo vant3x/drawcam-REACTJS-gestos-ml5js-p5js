@@ -10,7 +10,7 @@ import CameraActiveComponent from "../CameraActiveComponent";
 import { callGeminiForImageOcr } from "./../../../utils/callGeminiForImageOCR";
 import { Loader } from "../../Loader";
 
-export default function RightPanelControlComponent() {
+export default function RightPanelControlComponent({ onActivateVoice, onDeactivateVoice, isVoiceActive }) {
   const [ocrResult, setOcrResult] = useState("");
   const [sketchPrompt, setSketchPrompt] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -24,14 +24,20 @@ export default function RightPanelControlComponent() {
       console.warn("paintingRef no está disponible.");
       return null;
     }
-    return paintingRef.canvas.toDataURL('image/png');
+    return paintingRef.canvas.toDataURL("image/png");
   };
+
+  const resetOcr = () => {
+    setOcrResult("")
+  }
 
   const performOCRFromCanvas = async () => {
     if (!paintingRef) {
       setOcrResult("No hay dibujo para analizar.");
       return;
     }
+
+   
 
     setIsProcessing(true);
     setOcrProgress("Iniciando OCR...");
@@ -49,32 +55,41 @@ export default function RightPanelControlComponent() {
 
     try {
       setOcrProgress("Analizando con OCR local (Tesseract)...");
-      const worker = await createWorker(['eng', 'spa']);
-     /* await worker.setParameters({
+      const worker = await createWorker(["eng", "spa"]);
+      /* await worker.setParameters({
         tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÁÉÍÓÚáéíóúÑñ.,- ',
       tessedit_pageseg_mode: '6'
       })*/
-      const { data: { text, confidence } } = await worker.recognize(imageDataUrl);
+      const {
+        data: { text, confidence },
+      } = await worker.recognize(imageDataUrl);
       await worker.terminate();
 
-      console.log(confidence)
-      console.log(text)
+      console.log(confidence);
+      console.log(text);
       if (!text.trim() || confidence < 85) {
         setOcrProgress("Resultado local no confiable. Usando IA.");
-      
-        const geminiResult = await callGeminiForImageOcr(imageDataUrl, geminiApiKey);
+
+        const geminiResult = await callGeminiForImageOcr(
+          imageDataUrl,
+          geminiApiKey
+        );
         setOcrResult(geminiResult);
       } else {
         setOcrResult(`Tesseract (${Math.round(confidence)}%): ${text}`);
       }
-
     } catch (tesseractError) {
-      console.warn("Tesseract.js falló. Usando IA avanzada como respaldo.", tesseractError);
+      console.warn(
+        "Tesseract.js falló. Usando IA avanzada como respaldo.",
+        tesseractError
+      );
       setOcrProgress("OCR local falló. Probando con IA avanzada (Gemini)...");
-      
+
       try {
-       
-        const geminiResult = await callGeminiForImageOcr(imageDataUrl, geminiApiKey);
+        const geminiResult = await callGeminiForImageOcr(
+          imageDataUrl,
+          geminiApiKey
+        );
         setOcrResult(geminiResult);
       } catch (geminiError) {
         setOcrResult("Ambos sistemas de OCR (local y IA) fallaron.");
@@ -99,25 +114,31 @@ export default function RightPanelControlComponent() {
 
   return (
     <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
-      <CameraActiveComponent />
+      <CameraActiveComponent   onActivateVoice={onActivateVoice} onDeactivateVoice isVoiceActive  resetOcr={resetOcr} />
       <div className="p-4 border-b border-gray-700">
         <h3 className="text-sm font-semibold mb-3">Herramientas IA</h3>
         <div className="space-y-2 ">
-          <Button onClick={performOCRFromCanvas} disabled={isProcessing} size="sm" className="w-full mb-2">
+          <Button
+            onClick={performOCRFromCanvas}
+            disabled={isProcessing}
+            size="sm"
+            className="w-full mb-2"
+          >
             <Type className="h-4 w-4 mr-2" />
             {isProcessing ? ocrProgress : "OCR Texto"}
           </Button>
-        {
-          isProcessing &&   (
+          {isProcessing && (
             <div className="flex justify-center items-center h-12 mb-2">
-            <Loader/></div>
-          )
-        }
-        {ocrResult && (
-          <Alert className="mt-4 mb-2">
-            <AlertDescription className="text-xs">{ocrResult}</AlertDescription>
-          </Alert>
-        )}
+              <Loader />
+            </div>
+          )}
+          {ocrResult && (
+            <Alert className="mt-4 mb-2">
+              <AlertDescription className="text-xs">
+                {ocrResult}
+              </AlertDescription>
+            </Alert>
+          )}
           <Button disabled size="sm" className="w-full mt-4">
             <ImageIcon className="h-4 w-4 mr-2" />
             Img2Img (Próximamente)
@@ -130,16 +151,25 @@ export default function RightPanelControlComponent() {
             className="text-xs"
           />
         </div>
-        
       </div>
       <div className="p-4">
         <h3 className="text-sm font-semibold mb-3">Acciones</h3>
         <div className="space-y-2">
-          <Button onClick={handleClearCanvas} variant="outline" size="sm" className="w-full bg-transparent">
+          <Button
+            onClick={handleClearCanvas}
+            variant="outline"
+            size="sm"
+            className="w-full bg-transparent"
+          >
             <RotateCcw className="h-4 w-4 mr-2" />
             Limpiar Canvas
           </Button>
-          <Button variant="outline" size="sm" className="w-full bg-transparent" onClick={downloadImage}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full bg-transparent"
+            onClick={downloadImage}
+          >
             <Download className="h-4 w-4 mr-2" />
             Descargar Dibujo
           </Button>

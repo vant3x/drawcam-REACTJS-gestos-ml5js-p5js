@@ -46,6 +46,7 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
       // Referencias para detección de swipe
   const leftHandPositionsRef = useRef([]);
   const swipeDetectionActiveRef = useRef(false);
+  const swipeColorCounterRef = useRef(0);
   const lastSwipeTimeRef = useRef(0);
 
 
@@ -71,15 +72,12 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
     const positions = leftHandPositionsRef.current;
     const now = Date.now();
     
-    // Agregar posición actual con timestamp
     positions.push({ x: currentPos.x, y: currentPos.y, time: now });
     
-    // Mantener solo las últimas 10 posiciones (aproximadamente 300ms de historial)
     if (positions.length > 10) {
       positions.shift();
     }
     
-    // Necesitamos al menos 5 posiciones para detectar swipe
     if (positions.length < 5) return;
     
     const firstPos = positions[0];
@@ -88,23 +86,46 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
     const xDiff = lastPos.x - firstPos.x;
     const yDiff = lastPos.y - firstPos.y;
     
-    // Detectar swipe horizontal (izquierda a derecha o derecha a izquierda)
+ 
     if (timeDiff > 100 && timeDiff < 800) { // Entre 100ms y 800ms
       const horizontalDistance = Math.abs(xDiff);
       const verticalDistance = Math.abs(yDiff);
       
-      // El movimiento horizontal debe ser mayor que el vertical
       if (horizontalDistance > 50 && horizontalDistance > verticalDistance * 2) {
         // Evitar múltiples detecciones del mismo swipe
         if (now - lastSwipeTimeRef.current > 1000) { // 1 segundo entre swipes
           lastSwipeTimeRef.current = now;
-          
+
+          const lengthColors = colors.length;
+          let currentSwipeColorCounter = swipeColorCounterRef.current;
+
+      
+          console.log('el color', currentSwipeColorCounter);
           if (xDiff > 0) {
             console.log("🔄 SWIPE DETECTADO: Izquierda a Derecha");
+   
+
+                currentSwipeColorCounter--;
+         
+                        if (currentSwipeColorCounter <= 0) {
+                          currentSwipeColorCounter = lengthColors - 1; 
+                        }
+           
           } else {
             console.log("🔄 SWIPE DETECTADO: Derecha a Izquierda");
+            currentSwipeColorCounter++;
+
+            if (currentSwipeColorCounter >= lengthColors) {
+              currentSwipeColorCounter = 0;
+            }    
+
+                    
           }
-          
+
+          swipeColorCounterRef.current = currentSwipeColorCounter; 
+  
+          console.log('el color', swipeColorCounterRef.current);
+          setCurrentColor(colors[currentSwipeColorCounter]);
           // Limpiar posiciones después de detectar swipe
           leftHandPositionsRef.current = [];
         }
@@ -148,7 +169,6 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
         p.image(videoRef.current, 0, 0, p.width, p.height);
         p.image(paintingRef.current, 0, 0);
 
-        // Usa handsRef.current para acceder a los datos de las manos
 
         const currentHands = handsRef.current;
         let handIsOverColorPicker = false;
@@ -156,7 +176,6 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
         if (currentHands.length > 0) {
           let rightHand, leftHand;
 
-          // Separar las manos detectadas en izquierda y derecha
           for (let hand of currentHands) {
             if (hand.handedness === "Right") {
               const index = hand.index_finger_tip;
@@ -175,6 +194,7 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
             const { index, thumb } = leftHand;
             const x = (index.x + thumb.x) * 0.5;
             const y = (index.y + thumb.y) * 0.5;
+            if (!isChangeWithHandColorRef.current) {
             // Calcular grosor basado en la distancia entre dedos
             const pinchDistance = p.dist(index.x, index.y, thumb.x, thumb.y);
             const newStrokeWidth = Math.max(2, Math.min(50, pinchDistance));
@@ -184,11 +204,12 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
               setBrushSize([Math.round(newStrokeWidth)]);
             }
 
-            p.fill(255, 0, 255); // Color magenta como en el ejemplo
+
+            p.fill(255, 0, 255)
             p.noStroke();
             p.circle(x, y, strokeWidthRef.current);
 
-            // Texto mostrando el grosor actual
+   
             p.fill(255);
             p.textAlign(p.CENTER);
             p.text(
@@ -196,22 +217,28 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
               x,
               y - strokeWidthRef.current / 2 - 10
             );
+            }
             if (isChangeWithHandColorRef.current) {
-              // Activar detección de swipe y rastrear posición de la mano izquierda
+           
               swipeDetectionActiveRef.current = true;
               detectSwipe({ x, y });
               
-              // Indicador visual de que la detección de swipe está activa
               p.push();
-              p.fill(0, 255, 255, 100); // Cyan semitransparente
+              p.fill(0, 255, 255, 150); 
               p.noStroke();
-              p.circle(x, y, strokeWidthRef.current + 20);
+              p.circle(x, y, 60); 
+              const pulseSize = 40 + Math.sin(p.millis() * 0.01) * 10;
+              p.fill(p.color(currentColorRef.current)); 
+              p.circle(x, y, pulseSize);
+              
               p.fill(255);
               p.textAlign(p.CENTER);
-              p.text("Color mode", x, y + strokeWidthRef.current / 2 + 25);
+              p.textSize(12);
+              p.text("⬅ COLOR ➡", x, y - 5);
+              p.text(`${currentColor + 1}/${colors.length}`, x, y + 10);
               p.pop();
             } else {
-              // Si no está en modo cambio de color, limpiar historial de posiciones
+          
               if (swipeDetectionActiveRef.current) {
                 leftHandPositionsRef.current = [];
                 swipeDetectionActiveRef.current = false;
@@ -284,7 +311,7 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
               ) {
                 console.log('hay ', colors.length, ' colores')
                 console.log("¡Mano sobre el div de Color!");
-                setIsChangeColorWithHand(true)
+                setIsChangeColorWithHand(!isChangeWithHandColorRef.current)
                 console.log(isChangeWithHandColor)
               
                 p.push();
@@ -297,7 +324,6 @@ export default function CanvasCamera5Component({ colorDisplayRect, canvasCurrent
             }
           }
         } else {
-          // Si no hay manos detectadas, limpiar historial de swipe
           if (swipeDetectionActiveRef.current) {
             leftHandPositionsRef.current = [];
           }

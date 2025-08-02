@@ -24,7 +24,7 @@ export async function callGeminiForImageOcr(base64ImageData, apiKey) {
           data: pureBase64,
         },
       },
-      { text: "Extrae todo el texto visible de esta imagen como si fueras el mega OCR avanzado. Funciona en inglés y en español tambien, si no hay tetxo legible realmente  indicalo" },
+      { text: "Extrae todo el texto visible de esta imagen como si fueras el mega OCR avanzado. Funciona en inglés y en español tambien, si no hay tetxo legible realmente  indicalo y si hay dibujoso caracteres no muy complejos detallalo enese caso" },
     ];
     
     const response = await genAI.models.generateContent({
